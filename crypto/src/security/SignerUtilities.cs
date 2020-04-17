@@ -20,6 +20,7 @@ using Org.BouncyCastle.Crypto;
 using Org.BouncyCastle.Crypto.Engines;
 using Org.BouncyCastle.Crypto.Signers;
 using Org.BouncyCastle.Utilities;
+using Org.BouncyCastle.Asn1.Rosstandart;
 
 namespace Org.BouncyCastle.Security
 {
@@ -337,6 +338,9 @@ namespace Org.BouncyCastle.Security
             algorithms["GOST3411WITHECGOST3410"] = "ECGOST3410";
             algorithms[CryptoProObjectIdentifiers.GostR3411x94WithGostR3410x2001.Id] = "ECGOST3410";
 
+            algorithms[RosstandartObjectIdentifiers.id_tc26_signwithdigest_gost_3410_12_256.Id] = "GOST3411_2012_256WITHECGOST3410";
+            algorithms[RosstandartObjectIdentifiers.id_tc26_signwithdigest_gost_3410_12_512.Id] = "GOST3411_2012_512WITHECGOST3410";
+
             algorithms["ED25519"] = "Ed25519";
             algorithms[EdECObjectIdentifiers.id_Ed25519.Id] = "Ed25519";
             algorithms["ED25519CTX"] = "Ed25519ctx";
@@ -586,13 +590,22 @@ namespace Org.BouncyCastle.Security
                 return new SM2Signer(digest);
             }
 
-            if (mechanism.Equals("GOST3410"))
+            if (mechanism.Equals("GOST3410") || mechanism.Equals("GOST3411WITHGOST3410"))
             {
                 return new Gost3410DigestSigner(new Gost3410Signer(), new Gost3411Digest());
             }
-            if (mechanism.Equals("ECGOST3410"))
+            if (mechanism.Equals("ECGOST3410") || mechanism.Equals("GOST3411WITHECGOST3410"))
             {
                 return new Gost3410DigestSigner(new ECGost3410Signer(), new Gost3411Digest());
+            }
+
+            if (mechanism.Equals("GOST3411_2012_256WITHECGOST3410"))
+            {
+                return new Gost3410DigestSigner(new ECGost3410Signer(), new Gost3411_2012_256Digest());
+            }
+            if (mechanism.Equals("GOST3411_2012_512WITHECGOST3410"))
+            {
+                return new Gost3410DigestSigner(new ECGost3410Signer(), new Gost3411_2012_512Digest());
             }
 
             if (mechanism.Equals("SHA1WITHRSA/ISO9796-2"))
